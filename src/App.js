@@ -1,5 +1,6 @@
 import HomePage from "./Screens/HomePage/HomePage";
 import LoginPage from "./Screens/LoginPage/LoginPage";
+import AttendancePage from './Screens/AttendancePage/AttendancePage'
 import Layout from "./Layout";
 import ManageEmployee from "./Screens/ManageEmployee/ManageEmployee";
 
@@ -13,6 +14,9 @@ function App() {
     <Layout>
       <ManageEmployee />
     </Layout>
+    {/* <Layout>
+      <AttendancePage />
+    </Layout> */}
     </>
   );
 }

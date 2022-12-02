@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 
-function Table({ tableHeader, tableRows, editRow = false }) {
+function Table({ tableHeader = [], tableRows = [[]], editRow = false }) {
   return (
-    <div className="overflow-x-auto relative">
+    <div className="overflow-x-auto w-full relative">
       <table className=" w-full text-sm text-left text-gray-500 dark:text-gray-400">
         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
           <tr>
