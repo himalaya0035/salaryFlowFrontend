@@ -19,6 +19,7 @@ function ManageEmployee() {
     ["Himalaya Gupta", "CEO", "guptahimalaya2@gmail.com", "True"],
     ["Himalaya Gupta 2", "CFO", "guptahimalaya2@gmail.com", "True"],
     ["Naman Agarwal", "App Developer", "namanagarwal@gmail.com", "False"],
+
   ]);
   const [tableName, setTableName] = useState("All Employees");
 
@@ -26,7 +27,7 @@ function ManageEmployee() {
   const [newEmployeesRows, setNewEmployeesRows] = useState([]);
 
   useEffect(() => {
-    localStorage.setItem("searchData", JSON.stringify(tableRows));
+    localStorage.setItem("searchEmployeeData", JSON.stringify(tableRows));
     return () => {};
   }, []);
 
@@ -59,15 +60,17 @@ function ManageEmployee() {
   return (
     <React.Fragment>
       <div className="flex flex-col-reverse items-center md:flex-row space-x-0 md:space-x-4 ">
-        <div className="w-full mt-4 md:mt-0 bg-white relative rounded-md  shadow-md md:w-7/12 h-auto md:h-[650px]">
+        <div className="w-full mt-4 md:mt-0 bg-white  rounded-md  shadow-md md:w-7/12 h-auto md:h-[650px]">
           <div className="flex justify-between pl-5 pr-4 py-4 items-center">
             <h1 className=" text-lg font-semibold text-left text-gray-900 bg-white dark:text-white dark:bg-gray-800">
               {tableName}
             </h1>
             <div className="flex items-center space-x-2">
               <SearchInTable
-                keyLocalStorage="searchData"
+                keyLocalStorage="searchEmployeeData"
                 setTableRows={setTableRows}
+                filterFromIndexes = {[0,1,2]}
+                placeholder = 'Search Employees...'
               />
               <button
                 onClick={() => setShowAddEmployeeModal(true)}
@@ -99,10 +102,8 @@ function ManageEmployee() {
         </Modal>
       )}
       {showAddEmployeeModal && (
-        <Modal title={`Add Employee`} setShowModal={setShowAddEmployeeModal} width={'500px'} buttonText = 'Add Employee' buttonClickFn={() => setShowModal(false)}>
-          <div className="overflow-x-auto max-h-[450px]">
+        <Modal title={`Add Employee`} setShowModal={setShowAddEmployeeModal} width={'500px'} buttonText = 'Add Employee' buttonClickFn={() => setShowAddEmployeeModal(false)}>
             <AddEmployeeForm />
-          </div>
         </Modal>
       )}
     </React.Fragment>

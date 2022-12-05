@@ -2,7 +2,9 @@ import React from 'react'
 
 function AttendancePage() {
   return (
-    <div>AttendancePage</div>
+    <div>
+      
+    </div>
   )
 }
 

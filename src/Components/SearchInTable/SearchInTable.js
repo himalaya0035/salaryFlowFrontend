@@ -1,19 +1,23 @@
 import React from "react";
 import { Copy2DArray } from "../Utility/Utility";
 
-function SearchInTable({ keyLocalStorage, setTableRows }) {
+function SearchInTable({
+  keyLocalStorage,
+  setTableRows,
+  filterFromIndexes = [0],
+  placeholder = "Search..",
+}) {
   let tempData = JSON.parse(localStorage.getItem(keyLocalStorage));
   const performLiveSearch = (searchText) => {
     if (searchText.length === 0) {
       setTableRows(tempData);
     } else {
       setTableRows(
-        tempData.filter(
-          (temp) =>
-            temp[0].toLowerCase().includes(searchText.toLowerCase()) ||
-            temp[1].toLowerCase().includes(searchText.toLowerCase()) ||
-            temp[2].toLowerCase().includes(searchText.toLowerCase())
-        )
+        tempData.filter((temp) => {
+          return filterFromIndexes.some((index) =>
+            temp[index].toLowerCase().includes(searchText.toLowerCase())
+          );
+        })
       );
     }
   };
@@ -47,7 +51,7 @@ function SearchInTable({ keyLocalStorage, setTableRows }) {
           type="text"
           id="table-search"
           className="block p-2 pl-10 w-80 text-sm  text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-          placeholder="Search for Employees"
+          placeholder={placeholder}
           onInput={handleSearch}
         />
       </div>

@@ -40,8 +40,8 @@ function Modal({
         </div>
 
         <div>{children}</div>
-        <div className="flex items-center p-4 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
-          {buttonText.length > 0 && (
+        {buttonText.length > 0 && (<div className="flex items-center p-4 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
+         
             <button
               type="button"
               onClick={handleClick}
@@ -49,8 +49,8 @@ function Modal({
             >
               {buttonText}
             </button>
-          )}
-        </div>
+          
+        </div>)}
       </div>
   );
 }

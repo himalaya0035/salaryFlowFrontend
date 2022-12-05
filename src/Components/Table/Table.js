@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import EditEmployeeForm from "../EditEmployeeForm/EditEmployeeForm";
+import Modal from "../Modal/Modal";
 
 function Table({ tableHeader = [], tableRows = [[]], editRow = false }) {
+  const [showEditEmployeeModal, setShowEditEmployeeModal] = useState(false);
   return (
-    <div className="overflow-x-auto w-full relative">
+    <div className="overflow-x-auto w-full">
       <table className=" w-full text-sm text-left text-gray-500 dark:text-gray-400">
         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
           <tr>
@@ -46,14 +49,18 @@ function Table({ tableHeader = [], tableRows = [[]], editRow = false }) {
                     }
                   })}
                   {editRow && (
+                    <>
                     <td className="py-4 px-6 text-right">
                       <a
                         href="#"
                         className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                        onClick = {() => setShowEditEmployeeModal(true)}
                       >
                         Edit
                       </a>
                     </td>
+                    {showEditEmployeeModal && <Modal  title={`Edit Employee`} setShowModal={setShowEditEmployeeModal} width={'500px'} buttonText = 'Edit Employee' buttonClickFn={() => setShowEditEmployeeModal(false)}><EditEmployeeForm /> </Modal>}
+                    </>
                   )}
                 </tr>
               );
@@ -62,7 +69,7 @@ function Table({ tableHeader = [], tableRows = [[]], editRow = false }) {
             <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
               <td className="py-4 px-6"></td>
               <td className="py-4 px-6"></td>
-              <td className="py-4 px-6">No Employees Found!</td>
+              <td className="py-4 px-6">No Record Found!</td>
               <td className="py-4 px-6"></td>
               <td className="py-4 px-6"></td>
             </tr>
