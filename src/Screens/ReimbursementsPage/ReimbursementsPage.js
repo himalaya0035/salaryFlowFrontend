@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import AddRequestForm from "../../Components/AddRequestForm/AddRequestForm";
+import Modal from "../../Components/Modal/Modal";
 import ReimbursementCard from "../../Components/ReimbursementCard/ReimbursementCard";
 import SearchInTable from "../../Components/SearchInTable/SearchInTable";
 import Table from "../../Components/Table/Table";
@@ -13,9 +15,8 @@ function ReimbursementsPage() {
   ]);
   const [tableRows, setTableRows] = useState([
     ["Himalaya Gupta", "Cab", "22/10/2012", "Rs. 345", "Accepted"],
-    // ["Himalaya Gupta 2", "CFO", "guptahimalaya2@gmail.com", "True"],
-    // ["Naman Agarwal", "App Developer", "namanagarwal@gmail.com", "False"],
   ]);
+  const [showAddRequestModal, setShowAddRequestModal] = useState(false);
   useEffect(() => {
     localStorage.setItem("searchReimbursementData", JSON.stringify(tableRows));
     return () => {};
@@ -41,26 +42,51 @@ function ReimbursementsPage() {
           <div className="w-full flex justify-content-around items-center h-full">
             <div className="w-1/3 text-center">
               <h3 className="text-blue-600 text-4xl mb-[4px]">32</h3>
-              <p className="font-[500] tracking-wide text-md text-gray-500">Requests</p>
+              <p className="font-[500] tracking-wide text-md text-gray-500">
+                Requests
+              </p>
             </div>
             <div className="w-1/3 text-center">
               <h3 className="text-green-600 text-4xl mb-[4px]">60</h3>
-              <p className="font-[500] tracking-wide text-md text-gray-500">Accepted</p>
+              <p className="font-[500] tracking-wide text-md text-gray-500">
+                Accepted
+              </p>
             </div>
             <div className="w-1/3 text-center">
               <h3 className="text-red-600 text-4xl mb-[4px]">12</h3>
-              <p className="font-[500] tracking-wide text-md text-gray-500">Declined</p>
+              <p className="font-[500] tracking-wide text-md text-gray-500">
+                Declined
+              </p>
             </div>
           </div>
         </div>
         <div className="bg-white h-3/4 rounded-md shadow-md pl-5 pr-4 py-4">
-          <h1 className="text-lg rounded-md font-semibold text-left text-gray-900 bg-white">
-            Pending Requests
-          </h1>
+          <div className="flex items-center justify-between">
+            <h1 className="text-lg rounded-md font-semibold text-left text-gray-900 bg-white">
+              Pending Requests
+            </h1>
+            <button
+              onClick={() => setShowAddRequestModal(true)}
+              className="py-2 px-4 text-center rounded-[5px] text-sm text-white font-[500] tracking-wider bg-royalBlue"
+            >
+              Add Request
+            </button>
+            {showAddRequestModal && (
+              <Modal
+                title="Add Request"
+                setShowModal={setShowAddRequestModal}
+                width={"500px"}
+                buttonText = 'Add Request'
+                buttonClickFn={() => setShowAddRequestModal(false)}
+              >
+                <AddRequestForm />
+              </Modal>
+            )}
+          </div>
           <div className="mt-4 space-y-4">
-            <ReimbursementCard type={'food'} />
-            <ReimbursementCard type={'other'} />
-            <ReimbursementCard type={'taxi'} />
+            <ReimbursementCard type={"food"} />
+            <ReimbursementCard type={"other"} />
+            <ReimbursementCard type={"taxi"} />
           </div>
         </div>
       </div>

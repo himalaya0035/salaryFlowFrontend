@@ -10,6 +10,8 @@ import TopBar from "./Components/TopBar/TopBar";
 import React from "react";
 import NotFoundPage from "./Screens/NotFoundPage/NotFoundPage";
 import PaySalaryPage from './Screens/PaySalaryPage/PaySalaryPage'
+import SignupPage from "./Screens/SignupPage/SignupPage";
+import DepartmentPage from "./Screens/DepartmentPage/DepartmentPage";
 
 function App() {
   return (
@@ -54,7 +56,16 @@ function App() {
           </Layout>
         }
       />
+      <Route
+        path="/departments"
+        element={
+          <Layout>
+            <DepartmentPage/>
+          </Layout>
+        }
+      />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element = {<SignupPage />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

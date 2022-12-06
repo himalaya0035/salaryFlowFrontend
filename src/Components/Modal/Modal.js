@@ -5,13 +5,9 @@ function Modal({
   title,
   setShowModal,
   children,
-  buttonText = "",
-  buttonClickFn,
   width
 }) {
-  const handleClick = () => {
-    buttonClickFn();
-  };
+
   return (
       <div className={width === '500px' ? `absolute left-1/2 top-[5%] max-w-[350px] -translate-x-1/2 md:max-w-[500px] w-full bg-white rounded-lg shadow-md border-2` : 'absolute left-1/2 top-[5%] max-w-[350px] -translate-x-1/2 md:max-w-[800px] w-full bg-white rounded-lg shadow-md border-2'}>
         <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
@@ -40,17 +36,7 @@ function Modal({
         </div>
 
         <div>{children}</div>
-        {buttonText.length > 0 && (<div className="flex items-center p-4 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
-         
-            <button
-              type="button"
-              onClick={handleClick}
-              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-            >
-              {buttonText}
-            </button>
-          
-        </div>)}
+       
       </div>
   );
 }

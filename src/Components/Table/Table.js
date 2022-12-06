@@ -23,17 +23,17 @@ function Table({ tableHeader = [], tableRows = [[]], editRow = false }) {
         </thead>
         <tbody>
           {tableRows.length > 0 ? (
-            tableRows.map((tableRow, index) => {
+            tableRows.map((tableRow, index2) => {
               return (
                 <tr
-                  key={index}
+                  key={index2}
                   className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                 >
                   {tableRow.map((col, index) => {
                     if (index == 0) {
                       return (
                         <th
-                          key={col}
+                          key={index2 + col + index}
                           scope="row"
                           className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                         >
@@ -42,7 +42,7 @@ function Table({ tableHeader = [], tableRows = [[]], editRow = false }) {
                       );
                     } else {
                       return (
-                        <td className="py-4 px-6" key={col}>
+                        <td className="py-4 px-6" key={index2 + col + index}>
                           {col}
                         </td>
                       );

@@ -5,29 +5,65 @@ import Modal from "../../Components/Modal/Modal";
 import Table from "../../Components/Table/Table";
 import SearchInTable from "../../Components/SearchInTable/SearchInTable";
 import AddEmployeeForm from "../../Components/AddEmployeeForm/AddEmployeeForm";
+import axios from "axios";
+import { BASE_URL, ExcelDateToJSDate, mailEmailsList, postData } from "../../Components/Utility/Utility";
+import  emailjs from 'emailjs-com'
 
 function ManageEmployee() {
   const [showModal, setShowModal] = useState(false);
   const [showAddEmployeeModal, setShowAddEmployeeModal] = useState(false);
   const [tableHeader, setTableHeader] = useState([
     "Name",
-    "Title",
+    "Position",
+    "Department",
     "Email",
-    "Admin",
   ]);
   const [tableRows, setTableRows] = useState([
-    ["Himalaya Gupta", "CEO", "guptahimalaya2@gmail.com", "True"],
-    ["Himalaya Gupta 2", "CFO", "guptahimalaya2@gmail.com", "True"],
-    ["Naman Agarwal", "App Developer", "namanagarwal@gmail.com", "False"],
-
   ]);
   const [tableName, setTableName] = useState("All Employees");
 
   const [newEmployeesHeader, setNewEmployeesHeader] = useState([]);
   const [newEmployeesRows, setNewEmployeesRows] = useState([]);
-
+  const [allDepts, setAllDepts] = useState({});
+  const [allPositions, setAllPositions] = useState({});
+  const [sendEmployeesData, setSendEmployeesData] = useState([])
+  const [spinner, setSpinner] = useState(false)
   useEffect(() => {
-    localStorage.setItem("searchEmployeeData", JSON.stringify(tableRows));
+    const id = JSON.parse(localStorage.getItem('orgId'));
+     
+    const fetchEmployees = async () => {
+      const {data} = await axios.get(BASE_URL + 'get-orgEmps/' + id)
+      const newData = [];
+      data.map(d => {
+        const newArray = [];
+        newArray.push(d.f_name + ' ' + d.l_name);
+        newArray.push(d.position.pos_name);
+        newArray.push(d.department.dept_name);
+        newArray.push(d.email)
+        newData.push(newArray);
+      })
+      localStorage.setItem("searchEmployeeData", JSON.stringify(newData));
+      setTableRows(newData)
+    }
+    fetchEmployees();
+    const fetchDepartments = async () => {
+      const {data} = await axios.get(BASE_URL + 'get-depts/' + id);
+      const newDeptObject = {};
+      data.map(d => {
+        newDeptObject[d.dept_name] = d.id;
+      })
+      setAllDepts(newDeptObject);
+    }
+    fetchDepartments();
+    const fetchPositions = async () => {
+      const {data} = await axios.get(BASE_URL + 'get-positions/' + id)
+      const newPositionsObject = {};
+      data.map(p => {
+        newPositionsObject[p.pos_name] = p.id;
+      })
+      setAllPositions(newPositionsObject);
+    }
+    fetchPositions();
     return () => {};
   }, []);
 
@@ -42,6 +78,11 @@ function ManageEmployee() {
       const wsname = readedData.SheetNames[0];
       const ws = readedData.Sheets[wsname];
       const dataParse = XLSX.utils.sheet_to_json(ws, { header: 1 });
+      dataParse.map((d,index) => {
+        if (index != 0){
+          d[5] = ExcelDateToJSDate(d[5]).toISOString().slice(0,10);
+        }
+      })
       setNewEmployeesHeader(dataParse[0])
       setNewEmployeesRows(dataParse.slice(1))
       const newJSONData = [];
@@ -50,13 +91,42 @@ function ManageEmployee() {
         for (let j = 0; j < dataParse[0].length; j++) {
           newObject[dataParse[0][j]] = dataParse[i][j];
         }
-        newJSONData.push(newObject);
+        const newObject2 = {};
+        const id = JSON.parse(localStorage.getItem('orgId'));
+        newObject2['f_name'] = newObject['First Name']
+        newObject2['l_name'] = newObject['Last Name']
+        newObject2['email'] = newObject['Email']
+        newObject2['doj'] = newObject['Date of Joining']
+        newObject2['pos_id'] = allPositions[newObject['Position']]
+        newObject2['dept_id'] = allDepts[newObject['Department']]
+        newObject2['org_id'] = id;
+        newJSONData.push(newObject2);
       }
+      console.log(newJSONData)
+      setSendEmployeesData(newJSONData);
       setShowModal(true)
     };
     reader.readAsBinaryString(f);
   };
 
+  const addEmployees = async () => {
+    const response = await axios.post(BASE_URL + 'add-orgEmps',{"emps_data":sendEmployeesData});
+    const m = response.data;
+    setSpinner(true);
+    for (let i = 0;i<m.length;i++){
+      let templateParams = {
+        to_name: m[i].f_name + ' ' + m[i].l_name,
+        from_name: 'SalaryFlow',
+        email_id: m[i].email,
+        password : m[i].password
+      };
+      await emailjs.send("service_8bnq1as", "template_ua5boue", templateParams,'1vpxuEBh1k-XNwY93')
+    }
+    setSpinner(false);
+    setShowModal(false);
+    window.location.reload();
+  }
+  
   return (
     <React.Fragment>
       <div className="flex flex-col-reverse items-center md:flex-row space-x-0 md:space-x-4 ">
@@ -69,7 +139,7 @@ function ManageEmployee() {
               <SearchInTable
                 keyLocalStorage="searchEmployeeData"
                 setTableRows={setTableRows}
-                filterFromIndexes = {[0,1,2]}
+                filterFromIndexes = {[0,1,2,3]}
                 placeholder = 'Search Employees...'
               />
               <button
@@ -91,19 +161,27 @@ function ManageEmployee() {
           <div className="bg-white h-1/4 rounded-md px-4 py-2 shadow-md">
             <FileDrop handleUploadFunction={handleUpload} />
           </div>
-          <div className="hidden bg-white h-auto md:h-3/4 rounded-md px-4 py-2 shadow-md md:block"></div>
         </div>
       </div>
       {showModal && (
         <Modal title={`Confirm Employees List`} setShowModal={setShowModal} width = {'800px'} buttonText = 'Add Employees' buttonClickFn={() => setShowModal(false)}>
           <div className="overflow-x-auto max-h-[400px]">
             <Table tableHeader={newEmployeesHeader} tableRows = {newEmployeesRows} />
+            
           </div>
+          <button
+          type="button"
+          onClick={addEmployees}
+          className="m-4 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+        >
+          {spinner &&<i className="fa fa-spinner fa-spin mr-2"></i>}
+          Add Employees
+        </button>
         </Modal>
       )}
       {showAddEmployeeModal && (
-        <Modal title={`Add Employee`} setShowModal={setShowAddEmployeeModal} width={'500px'} buttonText = 'Add Employee' buttonClickFn={() => setShowAddEmployeeModal(false)}>
-            <AddEmployeeForm />
+        <Modal title={`Add Employee`} setShowModal={setShowAddEmployeeModal} width={'500px'}>
+            <AddEmployeeForm closeModalFn={() => setShowAddEmployeeModal(false)} />
         </Modal>
       )}
     </React.Fragment>
