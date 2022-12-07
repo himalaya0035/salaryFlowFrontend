@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import Modal from "../Modal/Modal";
-import Receipt from "../Receipt/Receipt";
+import SalaryTransactionModal from "../SalaryTransactionModal/SalaryTransactionModal";
 
-function TransactionLogCard() {
+function TransactionLogCard({title,date,type,employeesInTransaction,noOfEmployees}) {
   const [showModal, setShowModal] = useState(false);
-  const [icon, setIcon] = useState("fa-info-circle");
-  const [color, setColor] = useState("text-green-700");
   return (
     <>
       <div
@@ -29,23 +27,23 @@ function TransactionLogCard() {
           </svg>
         </div>
         <div className="flex flex-col ml-3">
-          <span className="font-semibold text-sm app-color-black">Himalaya Gupta</span>
-          <span className="font-semibold text-xs app-color-blue">Salary</span>
+          <span className="font-semibold text-sm app-color-black">{title}</span>
+          <span className="font-semibold text-xs app-color-blue">{type}</span>
         </div>
         <div className="flex flex-col ml-auto items-end">
-          <span className="font-semibold text-sm app-color-black">Rs. 60000</span>
+          <span className="font-semibold text-sm app-color-black">{noOfEmployees} Transactions</span>
           <span className="font-semibold text-xs app-color-gray-2">
-            31 Mar 2022
+            {date}
           </span>
         </div>
       </div>
       {showModal && (
         <Modal
-          title="Reimbursement Receipt"
+          title="Salary Transaction"
           setShowModal={setShowModal}
           width={"500px"}
-        >
-          <Receipt />
+        > 
+          <SalaryTransactionModal users = {employeesInTransaction} />
         </Modal>
       )}
     </>
