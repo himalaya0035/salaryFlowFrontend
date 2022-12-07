@@ -1,6 +1,97 @@
-import React from "react";
+import axios from "axios";
+import React, { useRef, useState } from "react";
+import { BASE_URL } from "../Utility/Utility";
 
-function AddRequestForm() {
+function AddRequestForm({closeModalFn}) {
+  const imgRef = useRef();
+  const [img, setImg] = useState();
+
+  const checkFileSize = (event) => {
+    let files = event.target.files;
+    let size = 5242880;
+    let err = [];
+    let status = true;
+    for (let x = 0; x < files.length; x++) {
+      if (files[x].size > size) {
+        err[x] = "Plaese upload file of size less than 5MB\n";
+        status = false;
+      }
+    }
+    for (let z = 0; z < err.length; z++) {
+      event.target.value = null;
+      status = false;
+    }
+    return status;
+  };
+
+  const checkMimeType = (event) => {
+    let files = event.target.files;
+    let err = [];
+
+    const types = ["image/png", "image/jpeg"];
+
+    let status = true;
+    for (let x = 0; x < files.length; x++) {
+      if (types.every((type) => files[x].type !== type)) {
+        err[x] = "Please upload image as JPG, JPEG or PNG\n";
+        status = false;
+      }
+    }
+
+    for (let z = 0; z < err.length; z++) {
+      // s
+      event.target.value = null;
+      status = false;
+    }
+    return status;
+  };
+
+  const fileChange = (e) => {
+    if (e.target.files.length > 0 && checkMimeType(e) && checkFileSize(e)) {
+      handleFileChange(e.target.files[0]);
+    }
+  };
+
+  const handleFileChange = async (file) => {
+    try {
+      const response = await axios.get(BASE_URL +  "photo-upload");
+      const uploadUrl = response.data.uploadUrl;
+      await fetch(uploadUrl, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        body: file,
+      })
+        .then((response) => {
+          const imgLink = uploadUrl.split("?")[0];
+          setImg(imgLink);
+          
+        })
+        .catch((err) => {
+          console.log(err.message);
+        });
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
+  const addRequest = async () => {
+    const id = JSON.parse(localStorage.getItem('orgId'));
+    const userId = JSON.parse(localStorage.getItem('userData')).id;
+    const requestObj = {
+      "user_id":userId,
+      "rmb_receipt":img,
+      "rmb_reason":"Food",
+      "isClaimed":0,
+      "rmb_amt":document.getElementById('amount').value,
+      "org_id":id,
+      "remark":document.getElementById('message').value
+    }
+    const response = await axios.post(BASE_URL + 'add-reimb',requestObj);
+    closeModalFn();
+    window.location.reload();
+  }
   return (
     <div className="px-4 py-4 ">
       <form className="space-y-4" action="#">
@@ -39,7 +130,8 @@ function AddRequestForm() {
         </div>
         <div>
   <label className="block mb-2 text-sm font-medium text-gray-900" htmlFor="user_avatar">Upload Receipt</label>
-  <input className="block w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 cursor-pointer dark:text-gray-400 focus:outline-none file:bg-gray-900 file:p-2 file:text-white file:border-0" aria-describedby="user_avatar_help" id="user_avatar" type="file" />
+  <input ref={imgRef}
+        onChange={fileChange} className="block w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 cursor-pointer dark:text-gray-400 focus:outline-none file:bg-gray-900 file:p-2 file:text-white file:border-0" aria-describedby="user_avatar_help" id="user_avatar" type="file" />
 </div>
         <div>
           <label
@@ -57,7 +149,13 @@ function AddRequestForm() {
           />
         </div>
     
-
+        <button
+          type="button"
+          onClick={addRequest}
+          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+        >
+          Add Request
+        </button>
       </form>
     </div>
   );

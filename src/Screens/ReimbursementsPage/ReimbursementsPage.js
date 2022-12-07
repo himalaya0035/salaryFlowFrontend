@@ -1,9 +1,11 @@
+import axios from "axios";
 import React, { useEffect, useState } from "react";
 import AddRequestForm from "../../Components/AddRequestForm/AddRequestForm";
 import Modal from "../../Components/Modal/Modal";
 import ReimbursementCard from "../../Components/ReimbursementCard/ReimbursementCard";
 import SearchInTable from "../../Components/SearchInTable/SearchInTable";
 import Table from "../../Components/Table/Table";
+import { BASE_URL } from "../../Components/Utility/Utility";
 
 function ReimbursementsPage() {
   const [tableHeader, setTableHeader] = useState([
@@ -13,12 +15,52 @@ function ReimbursementsPage() {
     "Amount",
     "Status",
   ]);
-  const [tableRows, setTableRows] = useState([
-    ["Himalaya Gupta", "Cab", "22/10/2012", "Rs. 345", "Accepted"],
-  ]);
+  const [tableRows, setTableRows] = useState([]);
   const [showAddRequestModal, setShowAddRequestModal] = useState(false);
+  const [pendingRequests, setPendingRequests] = useState([]);
+  const [countPending, setCountPending] = useState(0)
+  const [accepted, setAccepted] = useState(0);
+  const [declined, setDeclined] = useState(0)
   useEffect(() => {
-    localStorage.setItem("searchReimbursementData", JSON.stringify(tableRows));
+    const id = JSON.parse(localStorage.getItem('orgId'));
+    
+    const getAllReimbursements = async () => {
+      const {data} = await axios.get(BASE_URL + 'get-reimbOrg/' + id);
+      const reimbs = data.reimbs;
+      const pendingArray = [];
+      const completedArray = [];
+      let declineCount = 0;
+      reimbs.forEach(r => {
+        if (r.isClaimed === 0){
+          pendingArray.push(r);
+        }else if(r.isClaimed === 2){
+          declineCount++;
+          completedArray.push(r);
+        }else{
+          completedArray.push(r);
+        }
+      })
+      setDeclined(declineCount);
+      setCountPending(data.count_pending);
+      setAccepted(data.count_accepted)
+      setPendingRequests(pendingArray.reverse());
+      const newArray = [];
+      completedArray.reverse()
+      completedArray.map(c => {
+        const newA = [];
+        newA.push(c.user.f_name + ' ' + c.user.l_name);
+        newA.push(c.rmb_reason);
+        newA.push(new Date(c.createdAt).toLocaleDateString('en-GB', {
+          day: 'numeric', month: 'short', year: 'numeric'
+        }).replace(/ /g, ' '))
+        newA.push('Rs. ' + c.rmb_amt);
+        newA.push(c.isClaimed === 1 ? 'Accepted' : 'Declined')
+        newArray.push(newA)
+      })
+      setTableRows(newArray)
+      localStorage.setItem("searchReimbursementData", JSON.stringify(newArray));
+    }
+    getAllReimbursements();
     return () => {};
   }, []);
   return (
@@ -41,19 +83,19 @@ function ReimbursementsPage() {
         <div className="bg-white h-1/4 rounded-md px-4 py-4 shadow-md">
           <div className="w-full flex justify-content-around items-center h-full">
             <div className="w-1/3 text-center">
-              <h3 className="text-blue-600 text-4xl mb-[4px]">32</h3>
+              <h3 className="text-blue-600 text-4xl mb-[4px]">{countPending}</h3>
               <p className="font-[500] tracking-wide text-md text-gray-500">
                 Requests
               </p>
             </div>
             <div className="w-1/3 text-center">
-              <h3 className="text-green-600 text-4xl mb-[4px]">60</h3>
+              <h3 className="text-green-600 text-4xl mb-[4px]">{accepted}</h3>
               <p className="font-[500] tracking-wide text-md text-gray-500">
                 Accepted
               </p>
             </div>
             <div className="w-1/3 text-center">
-              <h3 className="text-red-600 text-4xl mb-[4px]">12</h3>
+              <h3 className="text-red-600 text-4xl mb-[4px]">{declined}</h3>
               <p className="font-[500] tracking-wide text-md text-gray-500">
                 Declined
               </p>
@@ -79,14 +121,18 @@ function ReimbursementsPage() {
                 buttonText = 'Add Request'
                 buttonClickFn={() => setShowAddRequestModal(false)}
               >
-                <AddRequestForm />
+                <AddRequestForm closeModalFn={() => setShowAddRequestModal(false)} />
               </Modal>
             )}
           </div>
-          <div className="mt-4 space-y-4">
-            <ReimbursementCard type={"food"} />
-            <ReimbursementCard type={"other"} />
-            <ReimbursementCard type={"taxi"} />
+          <div className="mt-4 space-y-4 h-[90%] overflow-y-auto">
+            {pendingRequests.length !== 0 ? pendingRequests.map(s => {
+              return (
+                <ReimbursementCard key={s.id} user={s.user.f_name + ' ' + s.user.l_name} date={new Date(s.createdAt).toLocaleDateString('en-GB', {
+                  day: 'numeric', month: 'short', year: 'numeric'
+                }).replace(/ /g, ' ')} type={"food"} amount={s.rmb_amt} data={s}/>
+              )
+            }) : <h1 className="text-gray-500 text-md text-center mt-4">No Requests Found</h1>}  
           </div>
         </div>
       </div>

@@ -2,7 +2,7 @@ import React,{useState,useEffect} from "react";
 import Modal from "../Modal/Modal";
 import Receipt from "../Receipt/Receipt";
 
-function ReimbursementCard({type}) {
+function ReimbursementCard({user,type,date,amount,data}) {
   const [showModal, setShowModal] = useState(false);
   const [icon, setIcon] = useState('fa-info-circle');
   const [color, setColor] = useState('text-green-700')
@@ -24,17 +24,17 @@ function ReimbursementCard({type}) {
     <>
     <div onClick={() => setShowModal(true)} className="w-full flex items-center cursor-pointer rounded-md justify-between h-[100px] bg-gray-100 hover:bg-gray-200 transition p-4">
       <div>
-        <h3 className="font-[500] text-md">Himalaya Gupta</h3>
-        <p className="font-[500] text-gray-600 text-sm">Food Expenses</p>
-        <p className="font-[500] text-gray-600 text-[13px]">22 Oct 2022</p>
+        <h3 className="font-[500] text-md">{user}</h3>
+        <p className="font-[500] text-gray-600 text-sm">{type}</p>
+        <p className="font-[500] text-gray-600 text-[13px]">{date}</p>
       </div>
       <div className="text-center">
         <i className={`fa ${icon} text-[25px] ${color}`}></i>
-        <p className="text-gray-500 mt-2 font-bold">Rs. 350</p>
+        <p className="text-gray-500 mt-2 font-bold">Rs. {amount}</p>
       </div>
     </div>
     {showModal && <Modal title='Reimbursement Receipt' setShowModal={setShowModal} width={'500px'} >
-        <Receipt/>
+        <Receipt data={data} closeModalFn={() => setShowModal(false)} />
       </Modal>}
     </>
   );
