@@ -130,9 +130,9 @@ function PaySalaryPage() {
         </h1>
         <div className="space-y-2 p-4 pt-0 overflow-y-auto h-[70%]">
           {allSalaryTransaction.map(transaction => {
-            return <TransactionLogCard key={transaction.transaction.id} noOfEmployees={transaction.userData.length} title={transaction.transaction.remark} type={'Salary'} date={new Date(transaction.transaction.createdAt).toLocaleDateString('en-GB', {
+            return <TransactionLogCard key={transaction.transaction.id} noOfEmployees={transaction.userData.length + ' Transactions'} title={transaction.transaction.remark} type={'Salary'} date={new Date(transaction.transaction.createdAt).toLocaleDateString('en-GB', {
               day: 'numeric', month: 'short', year: 'numeric'
-            }).replace(/ /g, ' ')} employeesInTransaction = {transaction.userData}/>
+            }).replace(/ /g, ' ')} employeesInTransaction = {transaction.userData} employeeView = {false}/>
           })}   
         </div>
           

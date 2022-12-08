@@ -2,7 +2,7 @@ import React,{useState,useEffect} from "react";
 import Modal from "../Modal/Modal";
 import Receipt from "../Receipt/Receipt";
 
-function ReimbursementCard({user,type,date,amount,data}) {
+function ReimbursementCard({user,type,date,amount,data,employeeView}) {
   const [showModal, setShowModal] = useState(false);
   const [icon, setIcon] = useState('fa-info-circle');
   const [color, setColor] = useState('text-green-700')
@@ -33,7 +33,7 @@ function ReimbursementCard({user,type,date,amount,data}) {
         <p className="text-gray-500 mt-2 font-bold">Rs. {amount}</p>
       </div>
     </div>
-    {showModal && <Modal title='Reimbursement Receipt' setShowModal={setShowModal} width={'500px'} >
+    {!employeeView &&  showModal && <Modal title='Reimbursement Receipt' setShowModal={setShowModal} width={'500px'} >
         <Receipt data={data} closeModalFn={() => setShowModal(false)} />
       </Modal>}
     </>

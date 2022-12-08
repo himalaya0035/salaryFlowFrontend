@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Modal from "../Modal/Modal";
 import SalaryTransactionModal from "../SalaryTransactionModal/SalaryTransactionModal";
 
-function TransactionLogCard({title,date,type,employeesInTransaction,noOfEmployees}) {
+function TransactionLogCard({title,date,type,employeesInTransaction,noOfEmployees,employeeView}) {
   const [showModal, setShowModal] = useState(false);
   return (
     <>
@@ -31,21 +31,22 @@ function TransactionLogCard({title,date,type,employeesInTransaction,noOfEmployee
           <span className="font-semibold text-xs app-color-blue">{type}</span>
         </div>
         <div className="flex flex-col ml-auto items-end">
-          <span className="font-semibold text-sm app-color-black">{noOfEmployees} Transactions</span>
+          <span className="font-semibold text-sm app-color-black">{noOfEmployees}</span>
           <span className="font-semibold text-xs app-color-gray-2">
             {date}
           </span>
         </div>
       </div>
-      {showModal && (
+      {!employeeView  && showModal && (
         <Modal
           title="Salary Transaction"
           setShowModal={setShowModal}
           width={"500px"}
         > 
-          <SalaryTransactionModal users = {employeesInTransaction} />
+       <SalaryTransactionModal users = {employeesInTransaction} />
         </Modal>
       )}
+      
     </>
   );
 }
