@@ -2,10 +2,11 @@ import React,{useState,useEffect} from "react";
 import Modal from "../Modal/Modal";
 import Receipt from "../Receipt/Receipt";
 
-function ReimbursementCard({user,type,date,amount,data,employeeView}) {
+function ReimbursementCard({user,type,date,amount,data,employeeView,status}) {
   const [showModal, setShowModal] = useState(false);
   const [icon, setIcon] = useState('fa-info-circle');
   const [color, setColor] = useState('text-green-700')
+  const [cardColor, setCardColor] = useState('bg-gray-100 hover:bg-gray-200')
   useEffect(() => {
     if (type === 'food'){
         setIcon('fa-hamburger')
@@ -17,12 +18,19 @@ function ReimbursementCard({user,type,date,amount,data,employeeView}) {
         setIcon('fa-info-circle')
         setColor('text-green-700')
       }
+      if (status === 0){
+        setCardColor('bg-gray-100 hover:bg-gray-200');
+      }else if (status === 1){
+        setCardColor('bg-green-100 hover:bg-green-200');
+      }else{
+        setCardColor('bg-red-100 hover:bg-red-200');
+      }
   }, [type])
   
 
   return (
     <>
-    <div onClick={() => setShowModal(true)} className="w-full flex items-center cursor-pointer rounded-md justify-between h-[100px] bg-gray-100 hover:bg-gray-200 transition p-4">
+    <div onClick={() => setShowModal(true)} className={"w-full flex items-center cursor-pointer rounded-md justify-between h-[100px]transition p-4 " + cardColor}>
       <div>
         <h3 className="font-[500] text-md">{user}</h3>
         <p className="font-[500] text-gray-600 text-sm">{type}</p>

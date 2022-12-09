@@ -7,6 +7,7 @@ import TransactionLogCard from '../../Components/TransactionLogCard/TransactionL
 import Table from "../../Components/Table/Table";
 import SearchInTable from "../../Components/SearchInTable/SearchInTable";
 import EditBankAccount from "../../Components/EditBankAccount/EditBankAccount";
+import PaySalarModal from "../../Components/PaySalaryModal/PaySalarModal";
 
 function PaySalaryPage() {
   const [bankDetails, setBankDetails] = useState({bank:{
@@ -24,15 +25,8 @@ function PaySalaryPage() {
   const [selectedEmployees, setSelectedEmployees] = useState([]);
   const [idArray, setIdArray] = useState([])
   const [allSalaryTransaction, setAllSalaryTransaction] = useState([]);
-
-  const paySalary = async () => {
-    const id = JSON.parse(localStorage.getItem('orgId'));
-    const salaryBody = {
-      userIds : selectedEmployees.map(s => Number(s)),
-      org_id : id, 
-    }
-    const response = await axios.post(BASE_URL + 'add-salaryTrans',salaryBody);
-  }
+  const [showPaySalaryModal, setShowPaySalaryModal] = useState(false);
+  
   useEffect(() => {
     const userId = JSON.parse(localStorage.getItem('userData')).id;
     const id = JSON.parse(localStorage.getItem("orgId"));
@@ -86,7 +80,7 @@ function PaySalaryPage() {
                 placeholder="Search Employees..."
               />
               <button
-                onClick={paySalary}
+                onClick={() => setShowPaySalaryModal(true)}
                 type="submit"
                 className="w-full py-2 px-4 text-center rounded-[5px] text-sm text-white font-[500] tracking-wider bg-royalBlue"
               >
@@ -124,11 +118,11 @@ function PaySalaryPage() {
             </button>
           </div>
         </div>
-        <div className="bg-white h-[100%] shadow-md rounded-md">
+        <div className="bg-white h-3/4 shadow-md rounded-md">
         <h1 className=" text-lg font-semibold text-left text-gray-900 px-4 py-4  bg-white rounded-md ">
               Transaction logs
         </h1>
-        <div className="space-y-2 p-4 pt-0 overflow-y-auto h-[70%]">
+        <div className="space-y-2 p-4 pt-0 overflow-y-auto h-[80%]">
           {allSalaryTransaction.map(transaction => {
             return <TransactionLogCard key={transaction.transaction.id} noOfEmployees={transaction.userData.length + ' Transactions'} title={transaction.transaction.remark} type={'Salary'} date={new Date(transaction.transaction.createdAt).toLocaleDateString('en-GB', {
               day: 'numeric', month: 'short', year: 'numeric'
@@ -140,6 +134,7 @@ function PaySalaryPage() {
       </div>
     </div>
     {editBankModal && <Modal width={'500px'} setShowModal={setEditBankModal} title="Edit Bank Account" ><EditBankAccount closeModalFn={() => setEditBankModal(false)} /></Modal>}
+    {showPaySalaryModal && <Modal width={'500px'} setShowModal={setShowPaySalaryModal} title="Name This Transaction" ><PaySalarModal selectedEmployees={selectedEmployees} closeModalFn={() => setShowPaySalaryModal(false)}/></Modal>}
     </React.Fragment>
   );
 }

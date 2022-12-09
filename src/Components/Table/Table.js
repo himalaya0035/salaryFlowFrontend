@@ -24,6 +24,7 @@ function Table({ tableHeader = [], tableRows = [[]], editRow = false,selectRow =
         checkbox.checked = false;
       }
     }
+    getAllCheckedInput();
   }
   return (
     <div className="overflow-x-auto w-full h-[85%] overflow-y-auto">

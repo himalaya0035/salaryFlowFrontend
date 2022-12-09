@@ -130,7 +130,7 @@ function ReimbursementsPage() {
               return (
                 <ReimbursementCard key={s.id} user={s.user.f_name + ' ' + s.user.l_name} date={new Date(s.createdAt).toLocaleDateString('en-GB', {
                   day: 'numeric', month: 'short', year: 'numeric'
-                }).replace(/ /g, ' ')} type={"food"} amount={s.rmb_amt} data={s}/>
+                }).replace(/ /g, ' ')} type={"food"} amount={s.rmb_amt} data={s} status={0}/>
               )
             }) : <h1 className="text-gray-500 text-md text-center mt-4">No Requests Found</h1>}  
           </div>

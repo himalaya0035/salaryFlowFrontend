@@ -31,8 +31,8 @@ function Sidebar() {
         {isAdmin && <NavLink to="/departments" className={({isActive} ) => isActive ? normalClasses + activeClasses : normalClasses}><img src="department.svg" className='w-6' alt="" /><span className='text-base'>Departments</span></NavLink>}
         {isAdmin && <NavLink to="/employees" className={({isActive} ) => isActive ? normalClasses + activeClasses : normalClasses}><img src="users.svg" className='w-6' alt="" /><span className='text-base'>Employees</span></NavLink>}
         {isAdmin && <NavLink to="/salary" className={({isActive} ) => isActive ? normalClasses + activeClasses : normalClasses}><img src="dollar.svg" className='w-6' alt="" /><span className='text-base'>Pay Salary</span></NavLink>}
-        <NavLink to="/attendance" className={({isActive} ) => isActive ? normalClasses + activeClasses : normalClasses}><img src="idcard.svg" className='w-6' alt="" /><span className='text-base'>Attendance</span></NavLink>
-        <NavLink to="/reimbursements" className={({isActive} ) => isActive ? normalClasses + activeClasses : normalClasses}><img src="reimbursments.svg" className='w-6' alt="" /><span className='text-base'>Reimbursements</span></NavLink>
+        {isAdmin && <NavLink to="/attendance" className={({isActive} ) => isActive ? normalClasses + activeClasses : normalClasses}><img src="idcard.svg" className='w-6' alt="" /><span className='text-base'>Attendance</span></NavLink> }
+        {isAdmin && <NavLink to="/reimbursements" className={({isActive} ) => isActive ? normalClasses + activeClasses : normalClasses}><img src="reimbursments.svg" className='w-6' alt="" /><span className='text-base'>Reimbursements</span></NavLink>}
         <button onClick={handleClick} className={normalClasses}><img src="logout.svg" className='w-6' alt="" /><span className='text-base'>Logout</span></button>
       </div>
       <div className='absolute bottom-0 left-0 px-6 border-t w-full py-4'>

@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { useEffect } from 'react'
 import { BASE_URL } from '../Utility/Utility'
 
-function EditBankAccount({closeModalFn}) {
+function EditBankAccount({closeModalFn, type="update"}) {
   const [allBankAccounts, setAllBankAccounts] = useState([])
   useEffect(() => {
     const getAllBankAccounts = async () => {
@@ -25,7 +25,12 @@ function EditBankAccount({closeModalFn}) {
       "acc_no":document.getElementById('accno').value,
       "ifsc_code":document.getElementById('ifsc').value
     }
-    const response = await axios.put(BASE_URL + 'update-userBank',newBankDetails);
+    let response;
+    if(type === "add") {
+      response = await axios.post(BASE_URL + `${type === "add" ? "add-userBank" : "update-userBank"}`,newBankDetails);
+    } else if(type === "update") {
+      response = await axios.put(BASE_URL + `${type === "add" ? "add-userBank" : "update-userBank"}`,newBankDetails);
+    }
     closeModalFn();
     window.location.reload();
   }
