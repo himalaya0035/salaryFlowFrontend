@@ -34,11 +34,14 @@ function HomePage() {
   const [userAttendance, setUserAttendance] = useState([]);
   const [userReimbursements, setUserReimbursements] = useState([]);
   const [showAddRequestModal, setShowAddRequestModal] = useState(false);
-  const [userData, setUserData]= useState()
+  const [userData, setUserData]= useState({
+  })
   const [org, setOrg] = useState({});
 
   const [showBankDetailsModal, setShowBankDetailsModal] = useState(false)
+  const [bankDetails, setBankDetails] = useState({bank:{
 
+  }})
   const takeLeave = async () => {
     const userId = JSON.parse(localStorage.getItem("userData")).id;
     const id = JSON.parse(localStorage.getItem("orgId"));
@@ -52,16 +55,30 @@ function HomePage() {
 
   useEffect(() => {
     const id = JSON.parse(localStorage.getItem("orgId"));
-    const userId = JSON.parse(localStorage.getItem("userData")).id;
-    setUserData(JSON.parse(localStorage.getItem("userData")));
+  
+  
+
     if (localStorage.getItem("userData") === null) {
       navigate("/login", { replace: true });
     } else {
-      const isLocalAdmin =
-        JSON.parse(localStorage.getItem("userData")).isAdmin === 0
-          ? false
-          : true;
+      
+      const userLoggedIn = JSON.parse(localStorage.getItem("userData"))
+      let isLocalAdmin =  JSON.parse(localStorage.getItem("userData")).isAdmin === 0
+        ? false
+        : true;
+        const userId = JSON.parse(localStorage.getItem("userData")).id;
+        setUserData(JSON.parse(localStorage.getItem("userData")));
       setIsAdmin(isLocalAdmin);
+      const getUserBankAccount = async () => {
+        const {data} = await axios.get(BASE_URL + 'get-userBank/' + userId);
+        setBankDetails(data)
+      }
+      getUserBankAccount();
+      const getOrg = async () => {
+        const { data } = await axios.get(BASE_URL + "get-org/" + id);
+        setOrg(data);
+      };
+      getOrg();
       if (isLocalAdmin) {
         const fetchEmployees = async () => {
           const { data } = await axios.get(BASE_URL + "get-orgEmps/" + id);
@@ -69,9 +86,10 @@ function HomePage() {
           data.map((d) => {
             const newArray = [];
             newArray.push(d.f_name + " " + d.l_name);
-            newArray.push(d.position.pos_name);
-            newArray.push(d.department.dept_name);
+            newArray.push(d.position ? d.position?.pos_name : 'Admin');
+            
             newArray.push(d.email);
+            newArray.push(d.department ? d.department?.dept_name : 'Management');
             newData.push(newArray);
           });
           localStorage.setItem("searchEmployeeData", JSON.stringify(newData));
@@ -97,6 +115,7 @@ function HomePage() {
         getAllTransactions();
         const getAllOnLeave = async () => {
           const { data } = await axios.get(BASE_URL + "get-attendance/" + id);
+          console.log(data)
           setOnLeave(data);
         };
         getAllOnLeave();
@@ -124,11 +143,7 @@ function HomePage() {
           setUserReimbursements(data.reverse());
         };
         getUserReimbursement();
-        const getOrg = async () => {
-          const { data } = await axios.get(BASE_URL + "get-org/" + id);
-          setOrg(data);
-        };
-        getOrg();
+        
       }
     }
   }, []);
@@ -143,7 +158,7 @@ function HomePage() {
                   Organisation Employees
                 </h1>
                 <button
-                  onClick={() => ""}
+                  onClick={() => navigate('/employees')}
                   type="submit"
                   className="py-2 px-4 text-center rounded-[5px] text-sm text-white font-[500] tracking-wider bg-royalBlue"
                 >
@@ -161,13 +176,13 @@ function HomePage() {
             <div className="relative bg-white w-full h-80 rounded-md md:w-3/12 shadow-md ">
               <h1 className=" text-lg font-semibold text-left text-gray-900 p-4 pb-0 bg-white rounded-md ">
                 On Leave Today
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <span className="text-sm">
                   {new Date().toLocaleDateString()}
                 </span>
               </h1>
               <div className="mt-2 space-y-2 overflow-y-auto h-[75%] p-4 pr-[2px] pt-0">
-                {onLeave.map((leave) => {
+                {onLeave.length !== 0 ? onLeave.map((leave) => {
                   return (
                     <div key={leave.id} className="bg-gray-100 p-2 rounded-md flex space-x-2 items-center">
                       <img
@@ -184,8 +199,12 @@ function HomePage() {
                         </p>
                       </div>
                     </div>
-                  );
-                })}
+                  )
+                }) : (
+                  <h1 className="text-gray-500 text-md text-center mt-4">
+                    No Leaves Found
+                  </h1>
+                )}
               </div>
               <Link
                 to="/attendance"
@@ -195,16 +214,44 @@ function HomePage() {
               </Link>
             </div>
             <div className=" w-full md:w-3/12 space-y-4 flex flex-col">
-              <div className="w-full h-40 bg-white md:h-1/2 rounded-md shadow-md px-4 py-2">
-                <h3 className="text-md font-[600] text-black tracking-wide">
-                  Create New Salary Flow
-                </h3>
-              </div>
-              <div className="w-full h-40 bg-white md:h-1/2 rounded-md shadow-md px-4 py-2">
-                <h3 className="text-md font-[600] text-black tracking-wide">
-                  Reimburse ammount
-                </h3>
-              </div>
+            <div className="w-full h-full bg-white rounded-md px-4 py-2 shadow-md">
+                  <div className="flex justify-between items-center p-2">
+                    <img
+                      src={org.org_logo}
+                      className="object-cover w-16 h-16 rounded-full border"
+                      alt=""
+                    />
+                    <div>
+                      <h1 className=" text-lg font-semibold text-left text-gray-900 bg-white dark:text-white dark:bg-gray-800">
+                        {org.org_name}
+                      </h1>
+                      <p className="text=gray-500 text-sm text-right">{org.emps} Employees</p>
+                      <p className="text=gray-500 text-sm text-right">{new Date(org.createdAt).toLocaleDateString('en-GB', {
+  day: 'numeric', month: 'short', year: 'numeric'
+}).replace(/ /g, ' ')}</p>
+                        
+                    </div>
+                  </div>
+
+                  <div className="p-2">
+
+                    <h1 className="text-md font-semibold mb-[2px] ">
+                      Your Profile 
+                    </h1>
+                    <div className="space-y-2">
+                      <h1 className="text-semibold text-md flex justify-between"><span>Name </span>: <span>{userData.f_name + ' ' + userData.l_name}</span></h1>
+                      <p className="text-semibold text-gray-600 text-sm flex justify-between"><span>Admin</span>: <span>True</span></p>
+                      <p className="text-semibold text-gray-600 text-sm flex justify-between"><span>Joined</span> : <span>{new Date(userData?.doj).toLocaleDateString("en-GB", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })
+                        .replace(/ /g, " ")}</span></p>
+                      <p className="text-semibold text-gray-600 text-sm flex justify-between"><span>Email</span>: <span>{userData?.email}</span></p>
+                   
+                    </div> 
+                  </div>
+                </div>
             </div>
           </div>
           <div className="flex flex-col space-y-4 md:space-x-4 md:space-y-0 md:flex-row">
@@ -245,7 +292,7 @@ function HomePage() {
                 Transaction logs
               </h1>
               <div className="space-y-2 p-2 pt-0 overflow-y-auto h-[80%]">
-                {allSalaryTransaction.map((transaction) => {
+                {allSalaryTransaction.length !== 0 ? allSalaryTransaction.map((transaction) => {
                   return (
                     <TransactionLogCard
                       key={transaction.transaction.id}
@@ -262,19 +309,36 @@ function HomePage() {
                       employeesInTransaction={transaction.userData}
                     />
                   );
-                })}
+                }) :  <h1 className="text-gray-500 text-md text-center mt-4">
+                No Leaves Found
+              </h1>}
               </div>
             </div>
             <div className="w-full md:w-3/12 space-y-4 flex flex-col">
-              <div className="w-full h-40 bg-white md:h-1/2 rounded-md shadow-md px-4 py-2">
-                <h3 className="text-md font-[600] text-black tracking-wide">
-                  No of Employees
-                </h3>
+              <div className="w-full flex justify-center items-center h-40 bg-white md:h-1/2 rounded-md shadow-md px-4 py-2">
+              <div className="text-center">
+              <h3 className="text-green-600 text-5xl mb-[4px]">{org.emps}</h3>
+              <p className="font-[500] tracking-wide text-md text-gray-500">
+                No of Employees
+              </p>
+            </div>
               </div>
-              <div className="w-full h-40 bg-white md:h-1/2 rounded-md shadow-md px-4 py-2">
-                <h3 className="text-md font-[600] text-black tracking-wide">
-                  Bank Account
-                </h3>
+              <div className="w-full flex items-center  h-40 bg-white md:h-1/2 rounded-md shadow-md px-4 py-2">
+              {bankDetails ? (<div className="flex items-center justify-between">
+            <div className="flex  items-center ">
+              <img
+                className="w-16 h-16 rounded-full mr-4"
+                src={bankDetails?.bank.bank_logo}
+                alt="Bank Logo"
+              />
+              <div>
+                <p className="font-bold">{bankDetails?.bank.bank_name}</p>
+                <p className="text-sm text-gray-600">{bankDetails?.acc_no}</p>
+              </div>
+            </div>
+          </div>) : <button onClick={() => setShowBankDetailsModal(true)} style={{
+                        marginTop:'20px'
+                      }} className="w-full  p-2 bg-royalBlue px-4 py-2 rounded-md text-white">Add Bank Details</button>}
               </div>
             </div>
           </div>
@@ -453,15 +517,16 @@ function HomePage() {
               </div>
             </div>
           </div>
-          {
+        
+        </>
+      )}
+        {
             showBankDetailsModal && (
               <Modal title={"Add Bank Account"} width={"500px"} setShowModal={() => {setShowBankDetailsModal(false)}}>
                 <EditBankAccount type={"add"} closeModalFn={() => {setShowBankDetailsModal(false)}}/>
               </Modal>
             )
           }
-        </>
-      )}
     </div>
   );
 }

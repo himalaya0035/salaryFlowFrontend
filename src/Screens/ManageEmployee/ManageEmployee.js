@@ -41,8 +41,8 @@ function ManageEmployee() {
       data.map((d) => {
         const newArray = [];
         newArray.push(d.f_name + " " + d.l_name);
-        newArray.push(d.position.pos_name);
-        newArray.push(d.department.dept_name);
+        newArray.push(d.position ? d.position?.pos_name : 'Admin');
+        newArray.push(d.department ? d.department?.dept_name : 'Management');
         newArray.push(d.email);
         newData.push(newArray);
       });
@@ -106,7 +106,6 @@ function ManageEmployee() {
         newObject2["org_id"] = id;
         newJSONData.push(newObject2);
       }
-      console.log(newJSONData);
       setSendEmployeesData(newJSONData);
       setShowModal(true);
     };
@@ -165,7 +164,7 @@ function ManageEmployee() {
           <Table
             tableHeader={tableHeader}
             tableRows={tableRows}
-            editRow={true}
+            // editRow={true}
           />
         </div>
         <div className="w-full h-auto md:w-5/12 md:h-[650px] space-y-4 flex flex-col">

@@ -8,7 +8,6 @@ function AttendancePage() {
   useEffect(() => {
     const getAllOnLeave = async () => {
       const { data } = await axios.get(BASE_URL + "get-attendance/" + id);
-      console.log(data);
       setOnLeave(data);
     };
     getAllOnLeave();
@@ -22,7 +21,7 @@ function AttendancePage() {
       </h1>
       {onLeave.map((leave) => {
         return (
-          <div className="bg-gray-100 p-2 rounded-md flex space-x-2 items-center">
+          <div key={leave.id} className="bg-gray-100 p-2 rounded-md flex space-x-2 items-center">
             <img
               src="userAvatar.svg"
               className="w-8 h-8 rounded-full border"

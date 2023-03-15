@@ -26,7 +26,7 @@ function PaySalaryPage() {
   const [idArray, setIdArray] = useState([])
   const [allSalaryTransaction, setAllSalaryTransaction] = useState([]);
   const [showPaySalaryModal, setShowPaySalaryModal] = useState(false);
-  
+  const [showBankDetailsModal, setShowBankDetailsModal] = useState(false)
   useEffect(() => {
     const userId = JSON.parse(localStorage.getItem('userData')).id;
     const id = JSON.parse(localStorage.getItem("orgId"));
@@ -43,8 +43,8 @@ function PaySalaryPage() {
         const newArray = [];
         ids.push(d.id);
         newArray.push(d.f_name + " " + d.l_name);
-        newArray.push(d.position.pos_name);
-        newArray.push(d.department.dept_name);
+        newArray.push(d.position ? d.position?.pos_name : 'Admin');
+        newArray.push(d.department ? d.department?.dept_name : 'Management');
         newArray.push(d.email);
         newData.push(newArray);
       });
@@ -101,23 +101,32 @@ function PaySalaryPage() {
         <h1 className=" text-lg font-semibold text-left mb-2 pr-4 py-0 rounded-md text-gray-900 bg-white dark:text-white dark:bg-gray-800">
               Bank Account
           </h1>
-          <div className="flex items-center justify-between">
+          {bankDetails ? (<div className="flex items-center justify-between">
             <div className="flex items-center ">
               <img
                 className="w-8 h-8 rounded-full mr-4"
-                src={bankDetails.bank.bank_logo}
+                src={bankDetails?.bank.bank_logo}
                 alt="Bank Logo"
               />
               <div>
-                <p className="font-bold">{bankDetails.bank.bank_name}</p>
-                <p className="text-sm text-gray-600">{bankDetails.acc_no}</p>
+                <p className="font-bold">{bankDetails?.bank.bank_name}</p>
+                <p className="text-sm text-gray-600">{bankDetails?.acc_no}</p>
               </div>
             </div>
             <button onClick={() => setEditBankModal(true)} className=" bg-royalBlue hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline">
               Edit Account
             </button>
-          </div>
+          </div>) : <button onClick={() => setShowBankDetailsModal(true)} style={{
+                        marginTop:'20px'
+                      }} className="w-full  p-2 bg-royalBlue px-4 py-2 rounded-md text-white">Add Bank Details</button>}
         </div>
+        {
+            showBankDetailsModal && (
+              <Modal title={"Add Bank Account"} width={"500px"} setShowModal={() => {setShowBankDetailsModal(false)}}>
+                <EditBankAccount type={"add"} closeModalFn={() => {setShowBankDetailsModal(false)}}/>
+              </Modal>
+            )
+          }
         <div className="bg-white h-3/4 shadow-md rounded-md">
         <h1 className=" text-lg font-semibold text-left text-gray-900 px-4 py-4  bg-white rounded-md ">
               Transaction logs

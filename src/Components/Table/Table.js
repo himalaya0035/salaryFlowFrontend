@@ -105,7 +105,6 @@ function Table({ tableHeader = [], tableRows = [[]], editRow = false,selectRow =
           ) : (
             <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
               <td className="py-4 px-6"></td>
-              <td className="py-4 px-6"></td>
               <td className="py-4 px-6">No Record Found!</td>
               <td className="py-4 px-6"></td>
               <td className="py-4 px-6"></td>

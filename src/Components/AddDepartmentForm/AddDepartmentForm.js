@@ -10,13 +10,14 @@ function AddDepartmentForm({closeModalFn}) {
         "dept_name":document.getElementById('dname').value,
         "org_id":id
     }
+    console.log(deptBody)
     const response = await axios.post(BASE_URL + 'add-dept',deptBody);
     closeModalFn();
     window.location.reload();
   }
   return (
     <div className="px-4 py-4 ">
-      <form className="space-y-4" action="#" id="addDeptForm">
+      {/* <form className="space-y-4"  id="addDeptForm"> */}
         <div>
           <label
             htmlFor="dname"
@@ -36,11 +37,11 @@ function AddDepartmentForm({closeModalFn}) {
         <button
               type="button"
               onClick={addDepartment}
-              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+              className="mt-4 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
             >
               Add Department
             </button>
-      </form>
+      {/* </form> */}
     </div>
   )
 }

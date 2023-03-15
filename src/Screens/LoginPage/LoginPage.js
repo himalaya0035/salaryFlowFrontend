@@ -12,7 +12,6 @@ function LoginPage() {
         "password":document.getElementById('loginPassword').value
     }
     const {data} = await axios.post(BASE_URL + 'login-user/',userObj)   
-    console.log(data)
     localStorage.setItem('userData',JSON.stringify(data));
     localStorage.setItem('orgId',JSON.stringify(data.org_id));
     navigate('/',{ replace: true })

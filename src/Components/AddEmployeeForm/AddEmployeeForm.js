@@ -37,7 +37,7 @@ function AddEmployeeForm({ closeModalFn }) {
       org_id: id,
     };
     const response = await axios.post(BASE_URL + "add-emp", empObject);
-    console.log(response.data)
+
     var templateParams = {
       to_name: empObject.f_name + ' ' + empObject.l_name,
       from_name: 'SalaryFlow',

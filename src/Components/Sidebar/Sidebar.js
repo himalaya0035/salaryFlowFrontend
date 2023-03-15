@@ -10,14 +10,17 @@ function Sidebar() {
   const [isAdmin, setIsAdmin] = useState(true);
   const handleClick = async () => {
     const {data} = await axios.get(BASE_URL + '/logout-user');
-    console.log(data)
     localStorage.removeItem('userData');
     localStorage.removeItem('orgData');
     navigate('/login',{replace:true})
   }
   useEffect(() => {
-   setIsAdmin(JSON.parse(localStorage.getItem('userData')).isAdmin === 0 ? false : true);
-    
+    const userLoggedIn = JSON.parse(localStorage.getItem("userData"));
+    if (userLoggedIn === null){
+      navigate('/login')
+    }else{
+      setIsAdmin(JSON.parse(localStorage.getItem('userData')).isAdmin === 0 ? false : true);
+    }
     return () => {
     
     }

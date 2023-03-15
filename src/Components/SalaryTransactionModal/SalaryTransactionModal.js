@@ -20,12 +20,12 @@ function SalaryTransactionModal({ users }) {
                   {user.f_name + " " + user.l_name}
                 </h3>
                 <p className="font-semibold text-xs text-gray-600">
-                  {user.position.pos_name}
+                  {user?.position?.pos_name}
                 </p>
               </div>
               <div>
               <h3 className="font-semibold text-sm app-color-black text-right">
-              {"Rs." + Math.round(user.position.pos_base_pay / 12)}
+              {"Rs." + Math.round(user?.position?.pos_base_pay / 12)}
               </h3>
               <p className="font-semibold text-xs text-gray-600">
                   Acc No. {user.userBank === null ? '' : user.userBank.acc_no}

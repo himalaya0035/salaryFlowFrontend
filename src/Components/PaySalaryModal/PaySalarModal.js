@@ -11,7 +11,6 @@ function PaySalarModal({selectedEmployees, closeModalFn}) {
             org_id : id, 
             remark:document.getElementById('remark').value
         }
-        console.log(salaryBody)
         const response = await axios.post(BASE_URL + 'add-salaryTrans',salaryBody);
         closeModalFn();
         window.location.reload()
